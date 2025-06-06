@@ -1,0 +1,35 @@
+---
+- name: Downloading nginx and PHP to remote VM
+  hosts: 192.168.56.103
+  become: true
+  tasks:
+
+    - name: Cache update
+      apt:
+        update_cache: yes
+
+    - name: Nginx set up
+      apt:
+        name: nginx
+        state: present
+
+    - name: PHP and other modules set up
+      apt:
+        name:
+          - php
+          - php-fpm
+          - php-cli
+        state: present
+
+    - name: Turning on nginx
+      service:
+        name: nginx
+        state: started
+        enabled: true
+
+    - name: Turning on php-fpm
+      service:
+        name: php7.4-fpm
+        state: started
+        enabled: yes
+      when: ansible_facts.packages["php7.4-fpm"] is defined
